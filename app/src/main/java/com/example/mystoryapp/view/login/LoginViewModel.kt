@@ -3,12 +3,9 @@ package com.example.mystoryapp.view.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.mystoryapp.data.UserRepository
-import com.example.mystoryapp.data.pref.UserModel
-import com.example.mystoryapp.data.response.LoginResponse
-import kotlinx.coroutines.launch
 import com.example.mystoryapp.data.Result
+import com.example.mystoryapp.data.UserRepository
+import com.example.mystoryapp.data.response.LoginResponse
 
 class LoginViewModel(private val repository: UserRepository) : ViewModel() {
 

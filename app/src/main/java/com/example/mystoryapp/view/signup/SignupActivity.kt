@@ -4,14 +4,14 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import com.example.mystoryapp.R
 import com.example.mystoryapp.ViewModelFactory
 import com.example.mystoryapp.data.Result
@@ -21,18 +21,16 @@ import com.example.mystoryapp.view.login.LoginActivity
 
 class SignupActivity : AppCompatActivity() {
 
+    private val viewModel by viewModels<SignUpViewModel> {
+        ViewModelFactory.getInstance(this)
+    }
     private lateinit var binding: ActivitySignupBinding
     private lateinit var myPasswordEditText: PasswordEditText
-    private lateinit var signUpViewModel: SignUpViewModel
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val factory: ViewModelFactory = ViewModelFactory.getInstance(this)
-        signUpViewModel = ViewModelProvider(this, factory)[SignUpViewModel::class.java]
 
         myPasswordEditText = binding.passwordEditText
 
@@ -49,7 +47,7 @@ class SignupActivity : AppCompatActivity() {
                     val name = nameEditText.text.toString().trim()
                     val email = emailEditText.text.toString().trim()
                     val password = passwordEditText.text.toString().trim()
-                    signUpViewModel.register(name, email, password)
+                    viewModel.register(name, email, password)
                 } else {
                     toastFailed()
                 }
@@ -59,7 +57,7 @@ class SignupActivity : AppCompatActivity() {
 
     private fun setupLogin() {
         val email = binding.emailEditText.text.toString()
-        signUpViewModel.registerResponse.observe(this){
+        viewModel.registerResponse.observe(this){
             when(it){
                 is Result.Loading -> {
                     showLoading(true)
@@ -67,10 +65,10 @@ class SignupActivity : AppCompatActivity() {
                 is Result.Success -> {
                     showLoading(false)
                     AlertDialog.Builder(this).apply {
-                        setTitle("Yeah!")
-                        setMessage("Akun dengan $email sudah jadi nih. Yul gaskun login")
+                        setTitle("Alright!")
+                        setMessage("Account with $email is created. Let\'s Login!")
                         setCancelable(false)
-                        setPositiveButton("Masuk"){_, _ ->
+                        setPositiveButton("Login"){_, _ ->
                             val intent = Intent(context, LoginActivity::class.java)
                             startActivity(intent)
                             finish()
@@ -124,20 +122,20 @@ class SignupActivity : AppCompatActivity() {
             repeatMode = ObjectAnimator.REVERSE
         }.start()
 
-        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(100)
+        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(200)
         val nameTextView =
-            ObjectAnimator.ofFloat(binding.nameTextView, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.nameTextView, View.ALPHA, 1f).setDuration(200)
         val nameEditTextLayout =
-            ObjectAnimator.ofFloat(binding.nameEditTextLayout, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.nameEditTextLayout, View.ALPHA, 1f).setDuration(200)
         val emailTextView =
-            ObjectAnimator.ofFloat(binding.emailTextView, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.emailTextView, View.ALPHA, 1f).setDuration(200)
         val emailEditTextLayout =
-            ObjectAnimator.ofFloat(binding.emailEditTextLayout, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.emailEditTextLayout, View.ALPHA, 1f).setDuration(200)
         val passwordTextView =
-            ObjectAnimator.ofFloat(binding.passwordTextView, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.passwordTextView, View.ALPHA, 1f).setDuration(200)
         val passwordEditTextLayout =
-            ObjectAnimator.ofFloat(binding.passwordEditTextLayout, View.ALPHA, 1f).setDuration(100)
-        val signup = ObjectAnimator.ofFloat(binding.signupButton, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.passwordEditTextLayout, View.ALPHA, 1f).setDuration(200)
+        val signup = ObjectAnimator.ofFloat(binding.signupButton, View.ALPHA, 1f).setDuration(600)
 
 
         AnimatorSet().apply {

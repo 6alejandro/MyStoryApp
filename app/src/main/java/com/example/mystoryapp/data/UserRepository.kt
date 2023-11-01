@@ -5,17 +5,20 @@ import androidx.lifecycle.liveData
 import com.example.mystoryapp.data.api.ApiService
 import com.example.mystoryapp.data.pref.UserModel
 import com.example.mystoryapp.data.pref.UserPreference
+import com.example.mystoryapp.data.response.AddResponse
 import com.example.mystoryapp.data.response.ListStoryItem
 import com.example.mystoryapp.data.response.LoginResponse
 import com.example.mystoryapp.data.response.RegisterResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class UserRepository private constructor(
     private val userPreference: UserPreference,
     private val apiService: ApiService
 ){
-    suspend fun saveSession(user: UserModel) {
+    private suspend fun saveSession(user: UserModel) {
     userPreference.saveSession(user)
 }
 
@@ -69,7 +72,20 @@ class UserRepository private constructor(
                 emit(Result.Error(e.message.toString()))
             }
         }
-
+    fun addStory(
+        token: String,
+        file: MultipartBody.Part,
+        description: RequestBody
+    ): LiveData<Result<AddResponse>> =
+        liveData(Dispatchers.IO) {
+            emit(Result.Loading)
+            try {
+                val response = apiService.postStories("Bearer $token", file, description)
+                emit (Result.Success(response))
+                } catch (e: Exception) {
+                emit(Result.Error(e.message.toString()))
+            }
+        }
     companion object {
         @Volatile
         private var instance: UserRepository? = null

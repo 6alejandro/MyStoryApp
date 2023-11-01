@@ -4,12 +4,11 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
-import com.example.mystoryapp.R
+import androidx.appcompat.app.AppCompatActivity
 import com.example.mystoryapp.databinding.ActivityWelcomeBinding
 import com.example.mystoryapp.view.login.LoginActivity
 import com.example.mystoryapp.view.signup.SignupActivity
@@ -57,10 +56,10 @@ class WelcomeActivity : AppCompatActivity() {
             repeatMode = ObjectAnimator.REVERSE
         }.start()
 
-        val login = ObjectAnimator.ofFloat(binding.loginButton, View.ALPHA, 1f).setDuration(100)
-        val signup = ObjectAnimator.ofFloat(binding.signupButton, View.ALPHA, 1f).setDuration(100)
-        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(100)
-        val desc = ObjectAnimator.ofFloat(binding.descTextView, View.ALPHA, 1f).setDuration(100)
+        val login = ObjectAnimator.ofFloat(binding.loginButton, View.ALPHA, 1f).setDuration(300)
+        val signup = ObjectAnimator.ofFloat(binding.signupButton, View.ALPHA, 1f).setDuration(300)
+        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(300)
+        val desc = ObjectAnimator.ofFloat(binding.descTextView, View.ALPHA, 1f).setDuration(300)
 
         val together = AnimatorSet().apply {
             playTogether(login, signup)
@@ -68,7 +67,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         AnimatorSet().apply {
             playSequentially(title, desc, together)
-            start()
-        }
+            startDelay = 200
+        }.start()
     }
 }
