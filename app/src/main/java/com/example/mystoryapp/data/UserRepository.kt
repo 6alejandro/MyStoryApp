@@ -1,5 +1,6 @@
 package com.example.mystoryapp.data
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.mystoryapp.data.api.ApiService
@@ -11,8 +12,10 @@ import com.example.mystoryapp.data.response.LoginResponse
 import com.example.mystoryapp.data.response.RegisterResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class UserRepository private constructor(
     private val userPreference: UserPreference,
@@ -75,14 +78,38 @@ class UserRepository private constructor(
     fun addStory(
         token: String,
         file: MultipartBody.Part,
-        description: RequestBody
+        description: RequestBody,
+        currentLocation: Location?
     ): LiveData<Result<AddResponse>> =
         liveData(Dispatchers.IO) {
             emit(Result.Loading)
             try {
-                val response = apiService.postStories("Bearer $token", file, description)
+                val response =
+                    if (currentLocation != null) {
+                        apiService.postStories(
+                            "Bearer $token", file, description,
+                            currentLocation?.latitude.toString()
+                                .toRequestBody("text/plain".toMediaType()),
+                            currentLocation?.longitude.toString()
+                                .toRequestBody("text/plain".toMediaType())
+                        )
+                    } else {
+                        apiService.postStories("Bearer $token", file, description)
+            }
                 emit (Result.Success(response))
                 } catch (e: Exception) {
+                emit(Result.Error(e.message.toString()))
+            }
+        }
+
+    fun getStoriesWithLocation(token: String): LiveData<Result<List<ListStoryItem>>> =
+        liveData(Dispatchers.IO) {
+            emit(Result.Loading)
+            try {
+                val response = apiService.getStoriesWithLocation("Bearer $token")
+                val storyList = response.listStory
+                emit(Result.Success(storyList))
+            } catch (e: Exception) {
                 emit(Result.Error(e.message.toString()))
             }
         }

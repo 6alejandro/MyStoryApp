@@ -1,5 +1,6 @@
 package com.example.mystoryapp.view.add
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
@@ -23,9 +24,10 @@ class AddStoryViewModel(private val repository: UserRepository): ViewModel() {
     fun addStory(
         token: String,
         file: MultipartBody.Part,
-        description: RequestBody
+        description: RequestBody,
+        currentLocation: Location?
     ) {
-        val liveData = repository.addStory(token, file, description)
+        val liveData = repository.addStory(token, file, description, currentLocation)
         _addStoryResponse.addSource(liveData) { result ->
             _addStoryResponse.value = result
         }

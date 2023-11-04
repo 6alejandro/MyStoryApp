@@ -15,6 +15,7 @@ import com.example.mystoryapp.data.Result
 import com.example.mystoryapp.databinding.ActivityMainBinding
 import com.example.mystoryapp.view.StoriesAdapter
 import com.example.mystoryapp.view.add.AddStoryActivity
+import com.example.mystoryapp.view.map.MapsActivity
 import com.example.mystoryapp.view.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
@@ -87,8 +88,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.logout) {
-            viewModel.logout()
+
+        when (item.itemId) {
+            R.id.logout -> viewModel.logout()
+            R.id.map -> {
+                val intent = Intent(this, MapsActivity::class.java)
+                startActivity(intent)
+            }
         }
         return super.onOptionsItemSelected(item)
     }

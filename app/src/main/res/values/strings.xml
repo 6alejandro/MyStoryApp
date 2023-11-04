@@ -26,4 +26,11 @@
     <string name="success_login">Login success!</string>
     <string name="empty_description">Fill out the description box</string>
     <string name="ok_message">Okay</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="map">Map</string>
+    <string name="failed_map">Failed to load location</string>
+    <string name="error_location">Location is disabled</string>
+    <string name="gps_message_title">Your location is disabled</string>
+    <string name="gps_message">Please turn your GPS on</string>
+    <string name="location">LOCATION</string>
 </resources>

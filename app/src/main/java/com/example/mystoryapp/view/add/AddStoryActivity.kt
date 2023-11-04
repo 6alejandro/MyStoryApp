@@ -1,19 +1,29 @@
 package com.example.mystoryapp.view.add
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import android.location.LocationRequest
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.mystoryapp.R
 import com.example.mystoryapp.ViewModelFactory
 import com.example.mystoryapp.data.Result
@@ -22,10 +32,16 @@ import com.example.mystoryapp.data.reduceFileImage
 import com.example.mystoryapp.data.uriToFile
 import com.example.mystoryapp.databinding.ActivityAddStoryBinding
 import com.example.mystoryapp.view.main.MainActivity
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.concurrent.TimeUnit
 
 class AddStoryActivity : AppCompatActivity() {
     private val viewModel by viewModels<AddStoryViewModel> {
@@ -34,6 +50,24 @@ class AddStoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddStoryBinding
     private var currentImageUri: Uri? = null
+
+    private var currentLocation: Location? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permission ->
+            when {
+                permission[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                    getMyLastLocation()
+                }
+                permission[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                    getMyLastLocation()
+                }
+                else -> binding.switchLocation.isChecked = false
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,11 +130,24 @@ class AddStoryActivity : AppCompatActivity() {
 
                     viewModel.getSession().observe(this) { user ->
                         token = user.token
-                        viewModel.addStory(token, multipartBody, requestBody)
+                        viewModel.addStory(token, multipartBody, requestBody, currentLocation)
                     }
                 }
             }?: showToast(getString(R.string.empty_image))
         }
+        binding.switchLocation.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            if (isChecked) {
+                if (!isGpsEnabled()) {
+                    showGpsMessage()
+                }
+                lifecycleScope.launch {
+                    getMyLastLocation()
+                }
+            } else {
+                currentLocation = null
+            }
+        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
     private fun postStory() {
@@ -174,6 +221,83 @@ class AddStoryActivity : AppCompatActivity() {
             Log.d("Photo Picker", "No media selected")
         }
     }
+
+    private fun checkpermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+    @SuppressLint("MissingPermission")
+    private fun getMyLastLocation() {
+        if (checkpermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            (checkpermission(Manifest.permission.ACCESS_COARSE_LOCATION))
+            ) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        currentLocation = location
+                    } else {
+                        Toast.makeText(
+                            this,
+                            R.string.error_location,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        getNewLocation()
+                    }
+                }
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    private fun getNewLocation() {
+        Toast.makeText(this.baseContext, "Get new location", Toast.LENGTH_SHORT).show()
+        val locationRequest = com.google.android.gms.location.LocationRequest()
+        locationRequest.priority = com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = TimeUnit.SECONDS.toMillis(1)
+        locationRequest.fastestInterval = 0
+        locationRequest.numUpdates = 1
+        if (ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED)
+            Looper.myLooper()?.let {
+                fusedLocationClient.requestLocationUpdates(
+                    locationRequest, locationCallback, it
+                )
+            }
+    }
+
+    private val locationCallback = object: LocationCallback() {
+        override fun onLocationResult(p0: LocationResult) {
+            currentLocation = p0.lastLocation
+        }
+    }
+
+    private fun isGpsEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
+    private fun showGpsMessage() {
+        AlertDialog.Builder(this).apply {
+            setTitle(getString(R.string.gps_message_title))
+            setMessage(getString(R.string.gps_message))
+            setPositiveButton(getString(R.string.next_message)) { _,_ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        }
+            create()
+            show()
+    }
+}
 
     private fun showToast(message: String?) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

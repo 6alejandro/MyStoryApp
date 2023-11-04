@@ -41,8 +41,6 @@ class StoriesAdapter(private val listStories: List<ListStoryItem>
                             Pair(tvName, "name")
                         )
                     itemView.context.startActivity(intent, optionsCompat.toBundle())
-
-
                 }
             }
         }
