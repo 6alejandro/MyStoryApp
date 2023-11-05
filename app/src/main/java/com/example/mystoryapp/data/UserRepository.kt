@@ -1,6 +1,7 @@
 package com.example.mystoryapp.data
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.paging.Pager
@@ -62,6 +63,7 @@ class UserRepository private constructor(
             try {
                 val response = apiService.login(email, password)
                 val token = response.loginResult.token
+                Log.d("login", "token: $token")
                 saveSession(UserModel(email, token))
                 emit(Result.Success(response))
             } catch (e: Exception) {

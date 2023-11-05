@@ -2,6 +2,7 @@ package com.example.mystoryapp.view.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -34,8 +35,15 @@ class MainActivity : AppCompatActivity() {
         binding.rvStories.layoutManager = layoutManager
 
         getSession()
-        setRecyclerView()
+//        setRecyclerView()
         setButtonAdd()
+
+        val adapter = StoriesAdapter()
+        binding.rvStories.adapter = adapter
+        viewModel.storyList.observe(this) {
+            adapter.submitData(lifecycle, it)
+            Log.d("paging", "data stories: $it")
+        }
     }
 
     private fun getSession() {
@@ -43,8 +51,6 @@ class MainActivity : AppCompatActivity() {
             if (!user.isLogin) {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
-            } else {
-                viewModel.getStories(user.token)
             }
         }
     }
@@ -56,25 +62,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRecyclerView() {
-        viewModel.storyListItem.observe(this) {
-            when (it) {
-                is Result.Loading -> {
-                    showLoading(true)
-                }
-
-                is Result.Error -> {
-                    showLoading(false)
-                }
-
-                is Result.Success -> {
-                    showLoading(false)
-                    adapter = StoriesAdapter(it.data)
-                    binding.rvStories.adapter = adapter
-                }
-            }
-        }
-    }
+//    private fun setRecyclerView() {
+//        viewModel.storyListItem.observe(this) {
+//            when (it) {
+//                is Result.Loading -> {
+//                    showLoading(true)
+//                }
+//
+//                is Result.Error -> {
+//                    showLoading(false)
+//                }
+//
+//                is Result.Success -> {
+//                    showLoading(false)
+//                    adapter = StoriesAdapter(it.data)
+//                    binding.rvStories.adapter = adapter
+//                }
+//            }
+//        }
+//    }
 
     private fun showLoading(isLoading: Boolean) {
         binding.rvStories.visibility = if (isLoading) View.GONE else View.VISIBLE

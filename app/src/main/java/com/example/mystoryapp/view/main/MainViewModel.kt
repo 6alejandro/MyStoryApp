@@ -1,5 +1,6 @@
 package com.example.mystoryapp.view.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
@@ -30,6 +31,17 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
 
     val storyList: LiveData<PagingData<ListStoryItem>> =
         repository.getStories(getToken()).cachedIn(viewModelScope)
+
+    private var token: String = "token default"
+
+    init {
+        viewModelScope.launch {
+            repository.getSession().collect{ user ->
+                token = user.token
+                Log.d("paging viewModel", "token: $token")
+            }
+        }
+    }
 
     private fun getToken(): String {
         var token = ""
