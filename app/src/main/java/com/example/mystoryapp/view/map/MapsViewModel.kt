@@ -7,8 +7,6 @@ import androidx.lifecycle.asLiveData
 import com.example.mystoryapp.data.UserRepository
 import com.example.mystoryapp.data.pref.UserModel
 import com.example.mystoryapp.data.response.ListStoryItem
-import com.example.mystoryapp.data.response.MapsResponse
-import com.example.mystoryapp.data.response.StoriesResponse
 import com.example.mystoryapp.data.Result
 
 class MapsViewModel(private val repository: UserRepository): ViewModel() {

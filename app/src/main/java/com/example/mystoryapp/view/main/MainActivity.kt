@@ -2,7 +2,6 @@ package com.example.mystoryapp.view.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -12,9 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mystoryapp.R
 import com.example.mystoryapp.ViewModelFactory
-import com.example.mystoryapp.data.Result
 import com.example.mystoryapp.databinding.ActivityMainBinding
-import com.example.mystoryapp.view.LoadingStateAdapter
 import com.example.mystoryapp.view.StoriesAdapter
 import com.example.mystoryapp.view.add.AddStoryActivity
 import com.example.mystoryapp.view.map.MapsActivity
@@ -35,23 +32,19 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         binding.rvStories.layoutManager = layoutManager
 
+        showLoading(true)
         getSession()
-        getData()
-//        setRecyclerView()
-        setButtonAdd()
-    }
 
-    private fun getData() {
         val adapter = StoriesAdapter()
-        binding.rvStories.adapter = adapter.withLoadStateFooter(
-            footer = LoadingStateAdapter {
-                adapter.retry()
-            }
-        )
+        binding.rvStories.adapter = adapter
         viewModel.storyList.observe(this) {
             adapter.submitData(lifecycle, it)
 //            Log.d("paging", "data stories: $it")
         }
+        showLoading(false)
+
+//        setRecyclerView()
+        setButtonAdd()
     }
 
     private fun getSession() {
