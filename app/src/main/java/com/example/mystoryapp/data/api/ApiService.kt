@@ -33,7 +33,9 @@ interface ApiService {
 
     @GET("stories")
     suspend fun getStories(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 20
     ):StoriesResponse
 
     @Multipart
@@ -46,7 +48,7 @@ interface ApiService {
         @Part("lon") lon: RequestBody? = null
     ): AddResponse
 
-    @GET
+    @GET("stories")
     suspend fun getStoriesWithLocation(
         @Header("Authorization") token: String,
         @Query("location") location: Int = 1
