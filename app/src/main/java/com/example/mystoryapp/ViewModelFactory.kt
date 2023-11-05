@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.mystoryapp.data.UserRepository
 import com.example.mystoryapp.di.Injection
+import com.example.mystoryapp.di.Injection.provideRepository
 import com.example.mystoryapp.view.add.AddStoryViewModel
 import com.example.mystoryapp.view.login.LoginViewModel
 import com.example.mystoryapp.view.main.MainViewModel
@@ -42,7 +43,7 @@ class ViewModelFactory(private val repository: UserRepository) : ViewModelProvid
         fun getInstance(context: Context): ViewModelFactory {
             if (INSTANCE == null) {
                 synchronized(ViewModelFactory::class.java) {
-                    INSTANCE = ViewModelFactory(Injection.provideRepository(context))
+                    INSTANCE = ViewModelFactory(provideRepository(context))
                 }
             }
             return INSTANCE as ViewModelFactory

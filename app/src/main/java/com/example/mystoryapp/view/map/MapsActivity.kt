@@ -96,21 +96,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
-        // Add a marker in Sydney and move the camera
-//
-//        addManyMarker()
     }
-
-//    data class uploadLocation(
-//        val name: String,
-//        val latitude: Double,
-//        val Longitue: Double
-//    )
-//    private fun addManyMarker() {
-//        val uploadLocation = listOf(
-//
-//        )
-//    }
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
@@ -123,8 +109,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.LENGTH_SHORT
         ).show()
     }
-
-//    companion object {
-//        private const val TAG = "MapsActivity"
-//    }
 }

@@ -12,6 +12,7 @@ import com.example.mystoryapp.data.response.ListStoryItem
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: UserRepository) : ViewModel() {
+
     fun getSession(): LiveData<UserModel> {
         return repository.getSession().asLiveData()
     }
@@ -34,4 +35,12 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
 
     val storyList: LiveData<PagingData<ListStoryItem>> =
         repository.getStories(getToken()).cachedIn(viewModelScope)
+
+
+
+
+
+
+
+
 }

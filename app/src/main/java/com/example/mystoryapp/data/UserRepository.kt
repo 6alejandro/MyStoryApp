@@ -32,7 +32,6 @@ class UserRepository private constructor(
 
     fun getSession(): Flow<UserModel> {
         return userPreference.getSession()
-
     }
 
     suspend fun logout() {
@@ -120,6 +119,7 @@ class UserRepository private constructor(
                 emit(Result.Error(e.message.toString()))
             }
         }
+
     companion object {
         @Volatile
         private var instance: UserRepository? = null
