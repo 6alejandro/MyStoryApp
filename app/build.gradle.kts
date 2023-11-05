@@ -19,7 +19,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_URL", "\"https://story-api.dicoding.dev/v1/\"" )
-        buildConfigField("String", "Authorization", "\"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\"")
+//        buildConfigField("String", "Authorization", "\"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\"")
     }
 
     buildTypes {
@@ -80,5 +80,13 @@ dependencies {
     implementation("com.google.android.gms:play-services-location-license:12.0.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-maps-license:12.0.1")
+
+    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
+
+    testImplementation("androidx.arch.core:core-testing:2.2.0") // InstantTaskExecutorRule
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1") //TestDispatcher
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    testImplementation("org.mockito:mockito-inline:3.12.4")
+
 
 }

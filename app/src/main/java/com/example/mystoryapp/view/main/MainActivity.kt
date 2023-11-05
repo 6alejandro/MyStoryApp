@@ -14,6 +14,7 @@ import com.example.mystoryapp.R
 import com.example.mystoryapp.ViewModelFactory
 import com.example.mystoryapp.data.Result
 import com.example.mystoryapp.databinding.ActivityMainBinding
+import com.example.mystoryapp.view.LoadingStateAdapter
 import com.example.mystoryapp.view.StoriesAdapter
 import com.example.mystoryapp.view.add.AddStoryActivity
 import com.example.mystoryapp.view.map.MapsActivity
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter: StoriesAdapter
+//    private lateinit var adapter: StoriesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +36,21 @@ class MainActivity : AppCompatActivity() {
         binding.rvStories.layoutManager = layoutManager
 
         getSession()
+        getData()
 //        setRecyclerView()
         setButtonAdd()
+    }
 
+    private fun getData() {
         val adapter = StoriesAdapter()
-        binding.rvStories.adapter = adapter
+        binding.rvStories.adapter = adapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                adapter.retry()
+            }
+        )
         viewModel.storyList.observe(this) {
             adapter.submitData(lifecycle, it)
-            Log.d("paging", "data stories: $it")
+//            Log.d("paging", "data stories: $it")
         }
     }
 
@@ -52,6 +60,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             }
+//            else {
+//                viewModel.getStories(user.token)
+//            }
         }
     }
 

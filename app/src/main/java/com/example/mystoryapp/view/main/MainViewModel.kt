@@ -26,30 +26,37 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    private val _storyListItem = MediatorLiveData<Result<List<ListStoryItem>>>()
-    val storyListItem: LiveData<Result<List<ListStoryItem>>> = _storyListItem
+//    private val _storyListItem = MediatorLiveData<Result<List<ListStoryItem>>>()
+//    val storyListItem: LiveData<Result<List<ListStoryItem>>> = _storyListItem
+//
+//    fun getStories(token: String){
+//        val liveData = repository.getStories(token)
+//        _storyListItem.addSource(liveData) { result ->
+//            _storyListItem.value = result
+//        }
+//    }
 
-    val storyList: LiveData<PagingData<ListStoryItem>> =
-        repository.getStories(getToken()).cachedIn(viewModelScope)
-
-    private var token: String = "token default"
-
-    init {
-        viewModelScope.launch {
-            repository.getSession().collect{ user ->
-                token = user.token
-                Log.d("paging viewModel", "token: $token")
-            }
-        }
-    }
 
     private fun getToken(): String {
         var token = ""
         viewModelScope.launch {
-            repository.getSession().collect(){ user ->
+            repository.getSession().collect { user ->
                 token = user.token
             }
         }
         return token
     }
+//    private var token: String = "token default"
+//
+//    init {
+//        viewModelScope.launch {
+//            repository.getSession().collect { user ->
+//                token = user.token
+//            }
+//        }
+//        return token
+//    }
+
+    val storyList: LiveData<PagingData<ListStoryItem>> =
+        repository.getStories(getToken()).cachedIn(viewModelScope)
 }

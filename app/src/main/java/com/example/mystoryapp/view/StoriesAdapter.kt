@@ -17,8 +17,8 @@ import com.example.mystoryapp.data.response.ListStoryItem
 import com.example.mystoryapp.databinding.ItemRowBinding
 import com.example.mystoryapp.view.detail.DetailActivity
 
-class StoriesAdapter: PagingDataAdapter<ListStoryItem, StoriesAdapter.ListViewHolder>(DIFF_CALLBACK) {
-        inner class ListViewHolder(private val binding: ItemRowBinding):
+class StoriesAdapter: PagingDataAdapter<ListStoryItem, StoriesAdapter.ListViewHolder>(DIFF_CALLBACK){
+        class ListViewHolder(private val binding: ItemRowBinding):
             RecyclerView.ViewHolder(binding.root){
             private var ivStory: ImageView = itemView.findViewById(R.id.iv_story)
             private var tvName: TextView = itemView.findViewById(R.id.tv_title)
@@ -56,25 +56,30 @@ class StoriesAdapter: PagingDataAdapter<ListStoryItem, StoriesAdapter.ListViewHo
     }
 
     override fun onBindViewHolder(holder: StoriesAdapter.ListViewHolder, position: Int) {
+//        val item  = listStories[position]
+//        holder.bind(item)
         val data = getItem(position)
         if (data != null) {
             holder.bind(data)
         }
-    }
+        }
+
+//    override fun getItemCount(): Int {
+//        return listStories.size
+//    }
 
     companion object {
-        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<ListStoryItem>() {
-            override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
-                return oldItem == newItem
-            }
-
+        private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<ListStoryItem>() {
             override fun areContentsTheSame(
                 oldItem: ListStoryItem,
                 newItem: ListStoryItem
             ): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
                 return oldItem.id == newItem.id
             }
         }
     }
-
 }

@@ -1,9 +1,13 @@
 package com.example.mystoryapp.data
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.example.mystoryapp.data.api.ApiService
 import com.example.mystoryapp.data.pref.UserModel
 import com.example.mystoryapp.data.pref.UserPreference
@@ -58,6 +62,7 @@ class UserRepository private constructor(
             try {
                 val response = apiService.login(email, password)
                 val token = response.loginResult.token
+                Log.d("login", "token: $token")
                 saveSession(UserModel(email, token))
                 emit(Result.Success(response))
             } catch (e: Exception) {
@@ -65,18 +70,28 @@ class UserRepository private constructor(
             }
         }
 
-    fun getStories(token: String): LiveData<Result<List<ListStoryItem>>> =
-        liveData(Dispatchers.IO) {
-            emit(Result.Loading)
-            try {
-                val response = apiService.getStories(("Bearer $token"))
-                val stories = response.listStory
-                emit(Result.Success(stories))
-            } catch (e: Exception){
-                emit(Result.Error(e.message.toString()))
-            }
+//    fun getStories(token: String): LiveData<Result<List<ListStoryItem>>> =
+//        liveData(Dispatchers.IO) {
+//            emit(Result.Loading)
+//            try {
+//                val response = apiService.getStories(("Bearer $token"))
+//                val stories = response.listStory
+//                emit(Result.Success(stories))
+//            } catch (e: Exception){
+//                emit(Result.Error(e.message.toString()))
+//            }
+//        }
 
-        }
+    fun getStories(token: String): LiveData<PagingData<ListStoryItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 5
+            ),
+            pagingSourceFactory = {
+                StoriesPagingSource("Bearer $token", apiService)
+            }
+        ).liveData
+    }
     fun addStory(
         token: String,
         file: MultipartBody.Part,
