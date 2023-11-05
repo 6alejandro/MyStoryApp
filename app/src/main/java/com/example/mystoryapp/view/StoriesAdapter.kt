@@ -45,7 +45,7 @@ class StoriesAdapter: PagingDataAdapter<ListStoryItem, StoriesAdapter.ListViewHo
                 }
             }
         }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoriesAdapter.ListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         return ListViewHolder(
             ItemRowBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -55,7 +55,7 @@ class StoriesAdapter: PagingDataAdapter<ListStoryItem, StoriesAdapter.ListViewHo
         )
     }
 
-    override fun onBindViewHolder(holder: StoriesAdapter.ListViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
 //        val item  = listStories[position]
 //        holder.bind(item)
         val data = getItem(position)

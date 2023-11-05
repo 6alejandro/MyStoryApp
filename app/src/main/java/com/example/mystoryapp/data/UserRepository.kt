@@ -32,6 +32,7 @@ class UserRepository private constructor(
 
     fun getSession(): Flow<UserModel> {
         return userPreference.getSession()
+
     }
 
     suspend fun logout() {
@@ -70,18 +71,6 @@ class UserRepository private constructor(
             }
         }
 
-//    fun getStories(token: String): LiveData<Result<List<ListStoryItem>>> =
-//        liveData(Dispatchers.IO) {
-//            emit(Result.Loading)
-//            try {
-//                val response = apiService.getStories(("Bearer $token"))
-//                val stories = response.listStory
-//                emit(Result.Success(stories))
-//            } catch (e: Exception){
-//                emit(Result.Error(e.message.toString()))
-//            }
-//        }
-
     fun getStories(token: String): LiveData<PagingData<ListStoryItem>> {
         return Pager(
             config = PagingConfig(
@@ -91,6 +80,7 @@ class UserRepository private constructor(
                 StoriesPagingSource("Bearer $token", apiService)
             }
         ).liveData
+
     }
     fun addStory(
         token: String,
@@ -105,9 +95,9 @@ class UserRepository private constructor(
                     if (currentLocation != null) {
                         apiService.postStories(
                             "Bearer $token", file, description,
-                            currentLocation?.latitude.toString()
+                            currentLocation.latitude.toString()
                                 .toRequestBody("text/plain".toMediaType()),
-                            currentLocation?.longitude.toString()
+                            currentLocation.longitude.toString()
                                 .toRequestBody("text/plain".toMediaType())
                         )
                     } else {
