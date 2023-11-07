@@ -29,31 +29,28 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        showLoading(true)
+
         val layoutManager = LinearLayoutManager(this)
         binding.rvStories.layoutManager = layoutManager
 
         getSession()
-        showLoading(true)
-
-
-        showLoading(false)
-
         setButtonAdd()
     }
 
     private fun getSession() {
         viewModel.getSession().observe(this) { user ->
+            val token = user.token
             if (!user.isLogin) {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             }
-            else {
-                adapter = StoriesAdapter()
-                binding.rvStories.adapter = adapter
-                viewModel.storyList.observe(this) {
-                    adapter.submitData(lifecycle, it)
-                }
+            adapter = StoriesAdapter()
+            binding.rvStories.adapter = adapter
+            viewModel.getStories(token).observe(this) {
+                adapter.submitData(lifecycle, it)
             }
+            showLoading(false)
         }
     }
 

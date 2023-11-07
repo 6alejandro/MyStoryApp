@@ -23,24 +23,19 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    private fun getToken(): String {
-        var token = ""
-        viewModelScope.launch {
-            repository.getSession().collect { user ->
-                token = user.token
-            }
-        }
-        return token
-    }
+//    private fun getToken(): String {
+//        var token = ""
+//        viewModelScope.launch {
+//            repository.getSession().collect { user ->
+//                token = user.token
+//            }
+//        }
+//        return token
+//    }
 
-    val storyList: LiveData<PagingData<ListStoryItem>> =
-        repository.getStories(getToken()).cachedIn(viewModelScope)
+//    val storyList: LiveData<PagingData<ListStoryItem>> =
+//        repository.getStories(getToken()).cachedIn(viewModelScope)
 
-
-
-
-
-
-
-
+    fun getStories(token: String): LiveData<PagingData<ListStoryItem>> =
+        repository.getStories(token).cachedIn(viewModelScope)
 }
